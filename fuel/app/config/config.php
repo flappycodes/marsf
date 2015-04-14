@@ -24,7 +24,7 @@ return array(
 	 *
 	 * Set this to null to have it automatically detected.
 	 */
-	// 'base_url'  => null,
+	'base_url'  => null,
 
 	/**
 	 * url_suffix - Any suffix that needs to be added to
@@ -244,7 +244,7 @@ return array(
 	/**************************************************************************/
 	/* Always Load                                                            */
 	/**************************************************************************/
-	// 'always_load'  => array(
+	'always_load'  => array(
 
 		/**
 		 * These packages are loaded on Fuel's startup.
@@ -257,9 +257,9 @@ return array(
 		 *     array('auth'	=> PKGPATH.'auth/')
 		 * );
 		 */
-		// 'packages'  => array(
-		// 	//'orm',
-		// ),
+		'packages'  => array(
+			'orm', 'auth',
+		)),
 
 		/**
 		 * These modules are always loaded on Fuel's startup. You can specify them
