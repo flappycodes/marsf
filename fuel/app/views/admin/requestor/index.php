@@ -1,33 +1,41 @@
 <h2>Listing Requestors</h2>
 <br>
 <?php if ($requestors): ?>
-<table class="table table-striped">
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped display" id="example" width="100%">
 	<thead>
 		<tr>
-			<th>Firstname</th>
-			<th>Middlename</th>
-			<th>Lastname</th>
-			<th>Depid</th>
-			<th>Contactno</th>
+			<th>Name</th>
+			<th>Department</th>
+			<th>Department position</th>
+			<th>Contact number</th>
 			<th>Status</th>
-			<th>Group</th>
 			<th></th>
 		</tr>
 	</thead>
 	<tbody>
 <?php foreach ($requestors as $requestor): ?>		<tr>
 
-			<td><?php echo $requestor->firstname; ?></td>
-			<td><?php echo $requestor->middlename; ?></td>
-			<td><?php echo $requestor->lastname; ?></td>
-			<td><?php echo $requestor->depid; ?></td>
-			<td><?php echo $requestor->contactno; ?></td>
-			<td><?php echo $requestor->status; ?></td>
-			<td><?php echo $requestor->group; ?></td>
+			<td><?php echo ucwords($requestor['firstname'] .", ". $requestor['middlename'] ." ". $requestor['lastname']); ?></td>
+			<td><?php echo $requestor['depname']; ?></td>
+			<td><?php if (1 == $requestor['group']) {
+				echo "Member";
+			} else {
+				echo "Department Head";
+				} ?></td>
+			<td><?php echo $requestor['contactno']; ?></td>
+			<td><?php if (0 == $requestor['rs']) {
+				echo "Active Requestor";
+			} else {
+				echo "Deactivated Requestor";
+				} ?></td>
 			<td>
-				<?php echo Html::anchor('admin/requestor/view/'.$requestor->id, 'View'); ?> |
-				<?php echo Html::anchor('admin/requestor/edit/'.$requestor->id, 'Edit'); ?> |
-				<?php echo Html::anchor('admin/requestor/delete/'.$requestor->id, 'Delete', array('onclick' => "return confirm('Are you sure?')")); ?>
+				<?php echo Html::anchor('admin/requestor/view/'.$requestor['rid'], 'View', array('class' => 'btn btn-primary')); ?> 
+				<?php echo Html::anchor('admin/requestor/edit/'.$requestor['rid'], 'Edit', array('class' => 'btn btn-warning')); ?> 
+				<?php if (0 == $requestor['rs']) {
+					echo Html::anchor('admin/requestor/delete/'.$requestor['rid'], 'Deactivate', array('onclick' => "return confirm('Are you sure?')", 'class' => 'btn btn-danger'));
+				} else {
+					echo Html::anchor('admin/requestor/activate/'.$requestor['rid'], 'Activate', array('onclick' => "return confirm('Are you sure?')", 'class' => 'btn btn-info'));
+					} ?>
 
 			</td>
 		</tr>
@@ -38,6 +46,8 @@
 <p>No Requestors.</p>
 
 <?php endif; ?><p>
+<br />
+<br />
 	<?php echo Html::anchor('admin/requestor/create', 'Add new Requestor', array('class' => 'btn btn-success')); ?>
 
 </p>

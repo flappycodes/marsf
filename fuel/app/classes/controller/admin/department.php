@@ -29,7 +29,7 @@ class Controller_Admin_Department extends Controller_Admin
 			{
 				$department = Model_Department::forge(array(
 					'depname' => Input::post('depname'),
-					'status' => Input::post('status'),
+					'status' => 0,
 				));
 
 				if ($department and $department->save())
@@ -63,7 +63,6 @@ class Controller_Admin_Department extends Controller_Admin
 		if ($val->run())
 		{
 			$department->depname = Input::post('depname');
-			$department->status = Input::post('status');
 
 			if ($department->save())
 			{
@@ -98,20 +97,28 @@ class Controller_Admin_Department extends Controller_Admin
 
 	public function action_delete($id = null)
 	{
-		if ($department = Model_Department::find($id))
-		{
-			$department->delete();
-
-			Session::set_flash('success', e('Deleted department #'.$id));
+		$deac = 1;
+		$deac_sql = "UPDATE `departments` SET `status` = ".$deac." WHERE `id` = ".$id." ";
+		$deac_sql_sub = DB::query($deac_sql)->execute();
+		if (isset($deac_sql_sub)) {
+			Session::set_flash('success', e('Deactivated department !'));
+		} else {
+			Session::set_flash('error', e('Could not deactivate department !'));
 		}
-
-		else
-		{
-			Session::set_flash('error', e('Could not delete department #'.$id));
-		}
-
 		Response::redirect('admin/department');
+	}
 
+	public function action_activate($id = null)
+	{
+		$deac = 0;
+		$deac_sql = "UPDATE `departments` SET `status` = ".$deac." WHERE `id` = ".$id." ";
+		$deac_sql_sub = DB::query($deac_sql)->execute();
+		if (isset($deac_sql_sub)) {
+			Session::set_flash('success', e('Activated department !'));
+		} else {
+			Session::set_flash('error', e('Could not activated department !'));
+		}
+		Response::redirect('admin/department');
 	}
 
 

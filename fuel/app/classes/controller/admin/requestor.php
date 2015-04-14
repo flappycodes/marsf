@@ -4,23 +4,35 @@ class Controller_Admin_Requestor extends Controller_Admin
 
 	public function action_index()
 	{
-		$data['requestors'] = Model_Requestor::find('all');
+		$view = View::forge('admin\requestor/index');
+		$sql = "SELECT *, r.`id` AS rid, r.`status` AS rs FROM requestors AS r 
+				INNER JOIN departments AS d 
+				ON r.`depid` = d.`id` 
+				WHERE d.`status` = 0 ";
+		$sql_db = DB::query($sql)->execute()->as_array();
+		$view->set_global('requestors', $sql_db);
 		$this->template->title = "Requestors";
-		$this->template->content = View::forge('admin\requestor/index', $data);
+		$this->template->content = $view;
 
 	}
 
 	public function action_view($id = null)
 	{
-		$data['requestor'] = Model_Requestor::find($id);
-
+		$view = View::forge('admin\requestor/view');
+		$sql = "SELECT *, r.`id` AS rid FROM requestors AS r 
+				INNER JOIN departments AS d 
+				ON r.`depid` = d.`id` 
+				WHERE d.`status` = 0 ";
+		$sql_db = DB::query($sql)->execute()->as_array();
+		$view->set_global('requestors', $sql_db);
 		$this->template->title = "Requestor";
-		$this->template->content = View::forge('admin\requestor/view', $data);
+		$this->template->content = $view;
 
 	}
 
 	public function action_create()
 	{
+		$view = View::forge('admin\requestor/create');
 		if (Input::method() == 'POST')
 		{
 			$val = Model_Requestor::validate('create');
@@ -33,7 +45,7 @@ class Controller_Admin_Requestor extends Controller_Admin
 					'lastname' => Input::post('lastname'),
 					'depid' => Input::post('depid'),
 					'contactno' => Input::post('contactno'),
-					'status' => Input::post('status'),
+					'status' => 0,
 					'group' => Input::post('group'),
 				));
 
@@ -54,15 +66,16 @@ class Controller_Admin_Requestor extends Controller_Admin
 				Session::set_flash('error', $val->error());
 			}
 		}
-
+		$view->set_global('department', Arr::assoc_to_keyval(Model_Department::find('all'), 'id', 'depname'));
 		$this->template->title = "Requestors";
-		$this->template->content = View::forge('admin\requestor/create');
+		$this->template->content = $view;
 
 	}
 
 	public function action_edit($id = null)
 	{
 		$requestor = Model_Requestor::find($id);
+		$view = View::forge('admin\requestor/edit');
 		$val = Model_Requestor::validate('edit');
 
 		if ($val->run())
@@ -72,7 +85,7 @@ class Controller_Admin_Requestor extends Controller_Admin
 			$requestor->lastname = Input::post('lastname');
 			$requestor->depid = Input::post('depid');
 			$requestor->contactno = Input::post('contactno');
-			$requestor->status = Input::post('status');
+			$requestor->status = 0;
 			$requestor->group = Input::post('group');
 
 			if ($requestor->save())
@@ -106,27 +119,36 @@ class Controller_Admin_Requestor extends Controller_Admin
 			$this->template->set_global('requestor', $requestor, false);
 		}
 
+		$view->set_global('department', Arr::assoc_to_keyval(Model_Department::find('all'), 'id', 'depname'));
 		$this->template->title = "Requestors";
-		$this->template->content = View::forge('admin\requestor/edit');
+		$this->template->content = $view;
 
 	}
 
 	public function action_delete($id = null)
 	{
-		if ($requestor = Model_Requestor::find($id))
-		{
-			$requestor->delete();
-
-			Session::set_flash('success', e('Deleted requestor #'.$id));
+		$deac = 1;
+		$deac_sql = "UPDATE `requestors` SET `status` = ".$deac." WHERE `id` = ".$id." ";
+		$deac_sql_sub = DB::query($deac_sql)->execute();
+		if (isset($deac_sql_sub)) {
+			Session::set_flash('success', e('Deactivated requestor !'));
+		} else {
+			Session::set_flash('error', e('Could not deactivate requestor !'));
 		}
-
-		else
-		{
-			Session::set_flash('error', e('Could not delete requestor #'.$id));
-		}
-
 		Response::redirect('admin/requestor');
+	}
 
+	public function action_activate($id = null)
+	{
+		$deac = 0;
+		$deac_sql = "UPDATE `requestors` SET `status` = ".$deac." WHERE `id` = ".$id." ";
+		$deac_sql_sub = DB::query($deac_sql)->execute();
+		if (isset($deac_sql_sub)) {
+			Session::set_flash('success', e('Activated requestor !'));
+		} else {
+			Session::set_flash('error', e('Could not activate requestor !'));
+		}
+		Response::redirect('admin/requestor');
 	}
 
 

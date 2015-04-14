@@ -3,13 +3,16 @@
 <head>
 	<meta charset="utf-8">
 	<title><?php echo $title; ?></title>
-	<?php echo Asset::css('bootstrap.css'); ?>
+	<?php echo Asset::css(array('bootstrap.css',
+	'demo_table.css')); ?>
 	<style>
 		body { margin: 50px; }
 	</style>
 	<?php echo Asset::js(array(
 		'jquery.min.js',
-		'bootstrap.js'
+		'bootstrap.js',
+		'jquery.dataTables.js',
+		'script.js'
 	)); ?>
 	<script>
 		$(function(){ $('.topbar').dropdown(); });
@@ -78,10 +81,10 @@
 		</div>
 		<hr/>
 		<footer>
-			<p class="pull-right">Page rendered in {exec_time}s using {mem_usage}mb of memory.</p>
+			<p class="pull-right">Develop by: Syross Algabre and Darryl Diapolet</p>
 			<p>
-				<a href="http://fuelphp.com">FuelPHP</a> is released under the MIT license.<br>
-				<small>Version: <?php echo e(Fuel::VERSION); ?></small>
+				<a href="http://fuelphp.com">DegHIS</a> Training & Immersion<br>
+				<small>&copy; 2015</small>
 			</p>
 		</footer>
 	</div>

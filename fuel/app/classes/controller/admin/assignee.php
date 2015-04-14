@@ -31,7 +31,7 @@ class Controller_Admin_Assignee extends Controller_Admin
 					'firstname' => Input::post('firstname'),
 					'middlename' => Input::post('middlename'),
 					'lastname' => Input::post('lastname'),
-					'status' => Input::post('status'),
+					'status' => 0,
 				));
 
 				if ($assignee and $assignee->save())
@@ -67,7 +67,6 @@ class Controller_Admin_Assignee extends Controller_Admin
 			$assignee->firstname = Input::post('firstname');
 			$assignee->middlename = Input::post('middlename');
 			$assignee->lastname = Input::post('lastname');
-			$assignee->status = Input::post('status');
 
 			if ($assignee->save())
 			{
@@ -104,20 +103,28 @@ class Controller_Admin_Assignee extends Controller_Admin
 
 	public function action_delete($id = null)
 	{
-		if ($assignee = Model_Assignee::find($id))
-		{
-			$assignee->delete();
-
-			Session::set_flash('success', e('Deleted assignee #'.$id));
+		$deac = 1;
+		$deac_sql = "UPDATE `assignees` SET `status` = ".$deac." WHERE `id` = ".$id." ";
+		$deac_sql_sub = DB::query($deac_sql)->execute();
+		if (isset($deac_sql_sub)) {
+			Session::set_flash('success', e('Deactivated assignee !'));
+		} else {
+			Session::set_flash('error', e('Could not activate assignee !'));
 		}
-
-		else
-		{
-			Session::set_flash('error', e('Could not delete assignee #'.$id));
-		}
-
 		Response::redirect('admin/assignee');
+	}
 
+	public function action_activate($id = null)
+	{
+		$deac = 0;
+		$deac_sql = "UPDATE `assignees` SET `status` = ".$deac." WHERE `id` = ".$id." ";
+		$deac_sql_sub = DB::query($deac_sql)->execute();
+		if (isset($deac_sql_sub)) {
+			Session::set_flash('success', e('Deactivated assignee !'));
+		} else {
+			Session::set_flash('error', e('Could not activate assignee !'));
+		}
+		Response::redirect('admin/assignee');
 	}
 
 
